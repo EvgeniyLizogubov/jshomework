@@ -80,6 +80,6 @@ public class HomeWorkApp {
             }
         } while (!win);
         
-        System.out.println("Поздравляем! Вы отгадали!");
+        System.out.println("Поздравляем! Вы отгадали слово \"" + hiddenWord + "\"");
     }
 }
