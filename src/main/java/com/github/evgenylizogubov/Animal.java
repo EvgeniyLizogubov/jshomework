@@ -2,7 +2,7 @@ package com.github.evgenylizogubov;
 
 import java.util.Random;
 
-public abstract class Animal {
+public class Animal {
     int maxRunLength;
     int maxSwimDistance;
     int maxJumpHeight;
@@ -13,11 +13,17 @@ public abstract class Animal {
         this.maxJumpHeight = maxJumpHeight;
     }
     
-    abstract void run(int distance);
+    void run(int distance) {
+        System.out.println("runs: " + (distance <= maxRunLength ? "true" : "false"));
+    }
     
-    abstract void swim(int distance);
+    void swim(int distance) {
+        System.out.println("swims: " + (distance <= maxSwimDistance ? "true" : "false"));
+    }
     
-    abstract void jump(int height);
+    void jump(int height) {
+        System.out.println("jumps: " + (height <= maxJumpHeight ? "true" : "false"));
+    }
     
     static int getRandomInRange(int min, int max) {
         Random random = new Random();
