@@ -3,9 +3,9 @@ package com.github.evgenylizogubov;
 import java.util.Random;
 
 public class Animal {
-    int maxRunLength;
-    int maxSwimDistance;
-    int maxJumpHeight;
+    private final int maxRunLength;
+    private final int maxSwimDistance;
+    private final int maxJumpHeight;
     
     public Animal(int maxRunLength, int maxSwimDistance, int maxJumpHeight) {
         this.maxRunLength = maxRunLength;
