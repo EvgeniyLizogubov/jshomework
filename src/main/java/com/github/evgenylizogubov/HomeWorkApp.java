@@ -1,15 +1,23 @@
 package com.github.evgenylizogubov;
 
+import java.util.Arrays;
+
 public class HomeWorkApp {
     public static void main(String[] args) {
-        Cat cat = new Cat();
-        cat.run(200);
-        cat.swim(150);
-        cat.jump(2);
+        Plate plate = new Plate(100);
+        plate.fillMax();
         
-        Dog dog = new Dog();
-        dog.run(450);
-        dog.swim(7);
-        dog.jump(1);
+        Cat[] cats = new Cat[4];
+        cats[0] = new Cat("Barsik");
+        cats[1] = new Cat("Murka");
+        cats[2] = new Cat("Vasily");
+        cats[3] = new Cat("Marseille");
+        
+        Arrays.stream(cats).forEach(cat -> cat.eat(plate));
+        Arrays.stream(cats).forEach(System.out::println);
+
+        plate.info();
+        System.out.println(plate.increaseFood(50));
+        plate.info();
     }
 }
