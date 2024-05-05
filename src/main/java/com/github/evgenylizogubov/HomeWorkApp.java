@@ -1,23 +1,34 @@
 package com.github.evgenylizogubov;
 
-import java.util.Arrays;
-
 public class HomeWorkApp {
+    
     public static void main(String[] args) {
-        Plate plate = new Plate(100);
-        plate.fillMax();
+        Actionable cat = new Cat("Pushistik", 200, 3);
+        Actionable human = new Human("Fry", 300, 1);
+        Actionable robot = new Robot("Bender", 500, 2);
         
-        Cat[] cats = new Cat[4];
-        cats[0] = new Cat("Barsik");
-        cats[1] = new Cat("Murka");
-        cats[2] = new Cat("Vasily");
-        cats[3] = new Cat("Marseille");
+        Actionable[] participants = new Actionable[3];
+        participants[0] = cat;
+        participants[1] = human;
+        participants[2] = robot;
         
-        Arrays.stream(cats).forEach(cat -> cat.eat(plate));
-        Arrays.stream(cats).forEach(System.out::println);
-
-        plate.info();
-        System.out.println(plate.increaseFood(50));
-        plate.info();
+        Obstacle wall1 = new Wall(2);
+        Obstacle wall2 = new Wall(3);
+        Obstacle treadmill1 = new Treadmill(300);
+        Obstacle treadmill2 = new Treadmill(500);
+        
+        Obstacle[] obstacles = new Obstacle[4];
+        obstacles[0] = wall1;
+        obstacles[1] = wall2;
+        obstacles[2] = treadmill1;
+        obstacles[3] = treadmill2;
+        
+        for (Actionable participant : participants) {
+            for (Obstacle obstacle : obstacles) {
+                if (!obstacle.overcomingObstacle(participant)) {
+                    break;
+                }
+            }
+        }
     }
 }

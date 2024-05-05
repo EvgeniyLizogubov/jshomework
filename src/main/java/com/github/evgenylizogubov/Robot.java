@@ -1,15 +1,15 @@
 package com.github.evgenylizogubov;
 
-public class Cat implements Actionable {
+public class Robot implements Actionable{
     
     private final String name;
     private final int maxRunningDistance;
     private final int maxJumpingHeight;
     
-    public Cat(String name, int maxRunningDistance, int maxJumpingHeight) {
-        this.name = name;
+    public Robot(String name, int maxRunningDistance, int maxJumpingHeight) {
         this.maxRunningDistance = maxRunningDistance;
         this.maxJumpingHeight = maxJumpingHeight;
+        this.name = name;
     }
     
     @Override
@@ -34,7 +34,7 @@ public class Cat implements Actionable {
     
     @Override
     public String toString() {
-        return "Cat{" +
+        return "Robot{" +
                 "name='" + name + '\'' +
                 ", maxRunningDistance=" + maxRunningDistance +
                 ", maxJumpingHeight=" + maxJumpingHeight +
