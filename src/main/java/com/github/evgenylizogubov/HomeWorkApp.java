@@ -1,56 +1,48 @@
 package com.github.evgenylizogubov;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeWorkApp {
     public static void main(String[] args) {
-        CustomLinkedList list = new CustomLinkedList();
-        list.print();
-        System.out.println(Arrays.toString(list.toArray()));
-        System.out.println(list.isEmpty());
+        String[] array = {"apple", "banana", "orange", "mango", "watermelon", "cherry", "strawberry",
+                "plum", "apricot", "apple", "orange", "cherry"};
         
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
-        list.add(5);
-        list.add(6);
-        list.print();
-        System.out.println(Arrays.toString(list.toArray()));
-        System.out.println(list.isEmpty());
+        printUniqOrWithCountsStrings(array);
         
-        list.add(2, 13);
-        list.print();
+        System.out.println();
+        System.out.println();
         
-        list.removeByIndex(2);
-        list.print();
+        Phonebook phonebook = new Phonebook();
+        phonebook.add("+7(747)111-11-11", "Иванов");
+        phonebook.add("+7(747)222-22-22", "Сидорова");
+        phonebook.add("+7(747)333-33-33", "Петров");
+        phonebook.add("+7(747)444-44-44", "Иванов");
+        phonebook.add("+7(747)555-55-55", "Спиридонов");
         
-        list.remove(2);
-        list.print();
+        System.out.println(phonebook.get("Иванов"));
+        System.out.println(phonebook.get("Сидорова"));
+        System.out.println(phonebook.get("Задов"));
+    }
+    
+    private static void printUniqOrWithCountsStrings(String[] array) {
+        Map<String, Integer> map = new HashMap<>();
         
-        list.removeFirst();
-        list.print();
+        for (String str : array) {
+            map.put(str, map.containsKey(str) ? map.get(str) + 1 : 1);
+        }
         
-        list.removeLast();
-        list.print();
+        System.out.println("Uniq elements:");
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            if (entry.getValue() == 1) {
+                System.out.print(entry.getKey() + " ");
+            }
+        }
+        System.out.println();
+        System.out.println();
         
-        System.out.println(list.getFirst());
-        System.out.println(list.get(1));
-        System.out.println(list.getLast());
-        
-        list.print();
-        System.out.println("Contains 99? - " + list.contains(99));
-        System.out.println("Contains 3? - " + list.contains(3));
-        
-        System.out.println("Index of 4 - " + list.indexOf(4));
-        
-        list.set(1, 77);
-        list.print();
-        
-        System.out.println("Size - " + list.size());
-        
-        System.out.println("Is empty? - " + list.isEmpty());
-        list.clear();
-        System.out.println("Is empty? - " + list.isEmpty());
+        System.out.println("Elements with counts:");
+        map.forEach((str, count) -> System.out.print(str + ":" + count + " "));
+        System.out.println();
     }
 }
