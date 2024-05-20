@@ -14,11 +14,11 @@ public class HomeWorkApp {
         System.out.println();
         
         Phonebook phonebook = new Phonebook();
-        phonebook.add("+7(747)111-11-11", "Иванов");
-        phonebook.add("+7(747)222-22-22", "Сидорова");
-        phonebook.add("+7(747)333-33-33", "Петров");
-        phonebook.add("+7(747)444-44-44", "Иванов");
-        phonebook.add("+7(747)555-55-55", "Спиридонов");
+        phonebook.add("Иванов", "+7(747)111-11-11");
+        phonebook.add("Сидорова", "+7(747)222-22-22");
+        phonebook.add("Петров", "+7(747)333-33-33");
+        phonebook.add("Иванов", "+7(747)444-44-44");
+        phonebook.add("Спиридонов", "+7(747)555-55-55");
         
         System.out.println(phonebook.get("Иванов"));
         System.out.println(phonebook.get("Сидорова"));
