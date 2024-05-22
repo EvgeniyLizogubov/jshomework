@@ -31,10 +31,10 @@ public class HomeWorkApp {
         float[] a1 = new float[H];
         float[] a2 = new float[H];
         
+        long start = System.currentTimeMillis();
+        
         System.arraycopy(arr, 0, a1, 0, H);
         System.arraycopy(arr, H, a2, 0, H);
-        
-        long start = System.currentTimeMillis();
         
         Thread t1 = new Thread(() -> {
             for (int i = 0; i < H; i++) {
