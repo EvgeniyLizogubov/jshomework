@@ -1,48 +1,62 @@
 package com.github.evgenylizogubov;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 public class HomeWorkApp {
-    public static void main(String[] args) {
-        String[] array = {"apple", "banana", "orange", "mango", "watermelon", "cherry", "strawberry",
-                "plum", "apricot", "apple", "orange", "cherry"};
-        
-        printUniqOrWithCountsStrings(array);
-        
-        System.out.println();
-        System.out.println();
-        
-        Phonebook phonebook = new Phonebook();
-        phonebook.add("Иванов", "+7(747)111-11-11");
-        phonebook.add("Сидорова", "+7(747)222-22-22");
-        phonebook.add("Петров", "+7(747)333-33-33");
-        phonebook.add("Иванов", "+7(747)444-44-44");
-        phonebook.add("Спиридонов", "+7(747)555-55-55");
-        
-        System.out.println(phonebook.get("Иванов"));
-        System.out.println(phonebook.get("Сидорова"));
-        System.out.println(phonebook.get("Задов"));
+    private static final int SIZE = 10000000;
+    private static final int H = SIZE / 2;
+    
+    public static void main(String[] args) throws InterruptedException {
+        calculateBySingleThread();
+        calculateByMultiThread();
     }
     
-    private static void printUniqOrWithCountsStrings(String[] array) {
-        Map<String, Integer> map = new HashMap<>();
+    private static void calculateBySingleThread() {
+        float[] arr = new float[SIZE];
+        Arrays.fill(arr, 1);
         
-        for (String str : array) {
-            map.put(str, map.containsKey(str) ? map.get(str) + 1 : 1);
+        long start = System.currentTimeMillis();
+        
+        for (int i = 0; i < SIZE; i++) {
+            arr[i] = (float)(arr[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
         }
         
-        System.out.println("Uniq elements:");
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            if (entry.getValue() == 1) {
-                System.out.print(entry.getKey() + " ");
+        System.out.println(System.currentTimeMillis() - start);
+    }
+    
+    private static void calculateByMultiThread() throws InterruptedException {
+        float[] arr = new float[SIZE];
+        Arrays.fill(arr, 1);
+        
+        float[] a1 = new float[H];
+        float[] a2 = new float[H];
+        
+        System.arraycopy(arr, 0, a1, 0, H);
+        System.arraycopy(arr, H, a2, 0, H);
+        
+        long start = System.currentTimeMillis();
+        
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < H; i++) {
+                a1[i] = (float)(a1[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
             }
-        }
-        System.out.println();
-        System.out.println();
+        });
         
-        System.out.println("Elements with counts:");
-        map.forEach((str, count) -> System.out.print(str + ":" + count + " "));
-        System.out.println();
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < H; i++) {
+                a2[i] = (float)(a1[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
+            }
+        });
+        
+        t1.start();
+        t2.start();
+        
+        t1.join();
+        t2.join();
+        
+        System.arraycopy(a1, 0, arr, 0, H);
+        System.arraycopy(a2, 0, arr, H, H);
+        
+        System.out.println(System.currentTimeMillis() - start);
     }
 }
