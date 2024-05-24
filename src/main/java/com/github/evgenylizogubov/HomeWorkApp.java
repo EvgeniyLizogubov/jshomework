@@ -44,7 +44,7 @@ public class HomeWorkApp {
         
         Thread t2 = new Thread(() -> {
             for (int i = 0; i < H; i++) {
-                a2[i] = (float)(a2[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
+                a2[i] = (float)(a2[i] * Math.sin(0.2f + i + H / 5) * Math.cos(0.2f + i + H / 5) * Math.cos(0.4f + i + H / 2));
             }
         });
         
