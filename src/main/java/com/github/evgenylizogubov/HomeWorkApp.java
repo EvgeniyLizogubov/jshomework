@@ -44,7 +44,7 @@ public class HomeWorkApp {
         
         Thread t2 = new Thread(() -> {
             for (int i = 0; i < H; i++) {
-                a2[i] = (float)(a1[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
+                a2[i] = (float)(a2[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
             }
         });
         
@@ -52,9 +52,9 @@ public class HomeWorkApp {
         t2.start();
         
         t1.join();
-        t2.join();
-        
         System.arraycopy(a1, 0, arr, 0, H);
+        
+        t2.join();
         System.arraycopy(a2, 0, arr, H, H);
         
         System.out.println(System.currentTimeMillis() - start);
