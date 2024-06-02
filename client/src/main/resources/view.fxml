@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <VBox alignment="CENTER" xmlns="http://javafx.com/javafx/17.0.2-ea"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.github.evgenylizogubov.Controller">
+    <HBox fx:id="loginBox">
+        <TextField fx:id="loginField" HBox.hgrow="ALWAYS" promptText="Введите ник"/>
+        <Button text="Войти" onAction="#login"/>
+    </HBox>
     <TextArea fx:id="msgArea" VBox.vgrow="ALWAYS" editable="false" focusTraversable="false"/>
-    <HBox>
+    <HBox fx:id="msgBox" visible="false" managed="false">
         <TextField fx:id="msgField" HBox.hgrow="ALWAYS" promptText="Введите сообщение" onAction="#sendMsg"/>
         <Button text="Отправить" onAction="#sendMsg"/>
     </HBox>
