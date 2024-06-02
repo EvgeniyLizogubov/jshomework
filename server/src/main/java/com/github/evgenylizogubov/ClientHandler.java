@@ -12,7 +12,6 @@ public class ClientHandler {
     private Server server;
     private String username;
     
-    
     public ClientHandler(Server server, Socket socket) throws IOException {
         this.server = server;
         this.socket = socket;
@@ -23,13 +22,14 @@ public class ClientHandler {
             try {
                 while (true) {
                     String msg = in.readUTF();
-                    if(msg.startsWith("/login ")) {
+                    if (msg.startsWith("/login ")) {
                         username = msg.split("\\s+")[1];
                         // /who_am_i
                         sendMessage("/login_ok " + username);
                         break;
                     }
                 }
+                
                 while (true) {
                     String msg = in.readUTF();
                     server.broadcastMessage(username + ": " + msg);
@@ -49,7 +49,7 @@ public class ClientHandler {
     
     public void disconnect() {
         server.unsubscribe(this);
-        if(socket != null) {
+        if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {

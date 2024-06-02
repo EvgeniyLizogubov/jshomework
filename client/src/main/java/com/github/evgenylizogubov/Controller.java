@@ -29,7 +29,7 @@ public class Controller {
     
     public void setUsername(String username) {
         this.username = username;
-        if(this.username == null) {
+        if (this.username == null) {
             loginBox.setVisible(true);
             loginBox.setManaged(true);
             msgBox.setVisible(false);
@@ -52,7 +52,7 @@ public class Controller {
                     // цикл авторизации
                     while (true) {
                         String msg = in.readUTF();
-                        if(msg.startsWith("/login_ok ")) {
+                        if (msg.startsWith("/login_ok ")) {
                             // client -> server /login Bob
                             // server -> client /login_ok Bob
                             // server -> client /login_failed Bob
@@ -65,7 +65,7 @@ public class Controller {
                         String msg = in.readUTF();
                         msgArea.appendText(msg + "\n");
                     }
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     disconnect();
@@ -79,16 +79,17 @@ public class Controller {
     }
     
     public void login() {
-        if(socket == null || socket.isClosed()) {
+        if (socket == null || socket.isClosed()) {
             connect();
         }
         
-        if(loginField.getText().isEmpty()) {
+        if (loginField.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Имя пользователя не может быть пустым", ButtonType.OK);
             alert.showAndWait();
             return;
             
         }
+        
         try {
             out.writeUTF("/login " + loginField.getText());
         } catch (IOException e) {
@@ -99,7 +100,8 @@ public class Controller {
     
     public void disconnect() {
         setUsername(null);
-        if(socket != null) {
+        
+        if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
