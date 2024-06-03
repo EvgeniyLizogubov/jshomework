@@ -30,11 +30,31 @@ public class Server {
         }
     }
     
+    public boolean privateMessage(String recipient, String text) throws IOException {
+        for (ClientHandler clientHandler : list) {
+            if (recipient.equals(clientHandler.getUsername())) {
+                clientHandler.sendMessage(text);
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     public void subscribe(ClientHandler clientHandler) {
         list.add(clientHandler);
     }
     
     public void unsubscribe(ClientHandler clientHandler) {
         list.remove(clientHandler);
+    }
+    
+    public boolean isUniqUsername(String username) {
+        for (ClientHandler clientHandler : list) {
+            if (username.equals(clientHandler.getUsername())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

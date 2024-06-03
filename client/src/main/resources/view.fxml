@@ -14,5 +14,4 @@
         <TextField fx:id="msgField" HBox.hgrow="ALWAYS" promptText="Введите сообщение" onAction="#sendMsg"/>
         <Button text="Отправить" onAction="#sendMsg"/>
     </HBox>
-
 </VBox>
