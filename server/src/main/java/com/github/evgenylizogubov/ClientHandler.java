@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ClientHandler {
+    private static final String WHO_AM_I_COMMAND = "/who_am_i";
+    private static final String PRIVATE_MESSAGE_COMMAND = "/p";
+    
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
@@ -23,16 +26,32 @@ public class ClientHandler {
             try {
                 while (true) {
                     String msg = in.readUTF();
-                    if(msg.startsWith("/login ")) {
-                        username = msg.split("\\s+")[1];
-                        // /who_am_i
-                        sendMessage("/login_ok " + username);
-                        break;
+                    if (msg.startsWith("/login ")) {
+                        String username = msg.split("\\s+")[1];
+                        if (server.isUniqUsername(username)) {
+                            this.username = username;
+                            sendMessage("/login_ok " + username);
+                            break;
+                        } else {
+                            sendMessage("/login_failed " + username);
+                        }
                     }
+                    
                 }
+                
                 while (true) {
                     String msg = in.readUTF();
-                    server.broadcastMessage(username + ": " + msg);
+                    if (msg.equals(WHO_AM_I_COMMAND)) {
+                        sendMessage(msg + "\n" + username);
+                    } else if (msg.startsWith(PRIVATE_MESSAGE_COMMAND)) {
+                        String recipient = msg.split(" ", 3)[1];
+                        String text = msg.split(" ", 3)[2];
+                        if (server.privateMessage(recipient, "from " + username + ": " + text)) {
+                            sendMessage("to " + recipient + ": " + text);
+                        }
+                    } else {
+                        server.broadcastMessage(username + ": " + msg);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -49,12 +68,16 @@ public class ClientHandler {
     
     public void disconnect() {
         server.unsubscribe(this);
-        if(socket != null) {
+        if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+    
+    public String getUsername() {
+        return username;
     }
 }
