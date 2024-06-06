@@ -1,32 +1,38 @@
 package com.github.evgenylizogubov;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class Controller {
-    
+public class Controller implements Initializable {
     @FXML
     private TextField msgField, loginField;
+    @FXML
+    private PasswordField passwordField;
     
     @FXML
     private TextArea msgArea;
     
     @FXML
     private HBox loginBox, msgBox;
+    
+    @FXML
+    ListView<String> clientsList;
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
     private String username;
     
+    // login: Bob@gmail.com password: 111 username: Bob
     public void setUsername(String username) {
         this.username = username;
         if (this.username == null) {
@@ -34,11 +40,15 @@ public class Controller {
             loginBox.setManaged(true);
             msgBox.setVisible(false);
             msgBox.setManaged(false);
+            clientsList.setVisible(false);
+            clientsList.setManaged(false);
         } else {
             loginBox.setVisible(false);
             loginBox.setManaged(false);
             msgBox.setVisible(true);
             msgBox.setManaged(true);
+            clientsList.setVisible(true);
+            clientsList.setManaged(true);
         }
     }
     
@@ -55,14 +65,29 @@ public class Controller {
                         if (msg.startsWith("/login_ok ")) {
                             // client -> server /login Bob
                             // server -> client /login_ok Bob
-                            // server -> client /login_failed Bob
+                            // server -> client /login_failed username already in use
                             setUsername(msg.split("\\s+")[1]);
                             break;
+                        }
+                        
+                        if (msg.startsWith("/login_failed ")) {
+                            String reason = msg.split("\\s+", 2)[1];
+                            msgArea.appendText(reason + "\n");
                         }
                     }
                     // цикл общения
                     while (true) {
                         String msg = in.readUTF();
+                        if (msg.startsWith("/clients_list ")) {
+                            Platform.runLater(() -> {
+                                clientsList.getItems().clear();
+                                String[] tokens = msg.split("\\s+");
+                                for (int i = 1; i < tokens.length; i++) {
+                                    clientsList.getItems().add(tokens[i]);
+                                }
+                            });
+                            continue;
+                        }
                         msgArea.appendText(msg + "\n");
                     }
                 } catch (IOException e) {
@@ -71,7 +96,6 @@ public class Controller {
                     disconnect();
                 }
             }).start();
-            
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Unable to connect to server");
@@ -91,16 +115,14 @@ public class Controller {
         }
         
         try {
-            out.writeUTF("/login " + loginField.getText());
+            out.writeUTF("/login " + loginField.getText() + " " + passwordField.getText());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
     }
     
     public void disconnect() {
         setUsername(null);
-        
         if (socket != null) {
             try {
                 socket.close();
@@ -118,5 +140,10 @@ public class Controller {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно отправить сообщение");
             alert.showAndWait();
         }
+    }
+    
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        setUsername(null);
     }
 }

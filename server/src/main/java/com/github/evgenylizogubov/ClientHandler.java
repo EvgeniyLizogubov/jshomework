@@ -6,15 +6,11 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ClientHandler {
-    private static final String WHO_AM_I_COMMAND = "/who_am_i";
-    private static final String PRIVATE_MESSAGE_COMMAND = "/p";
-    
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
     private Server server;
     private String username;
-    
     
     public ClientHandler(Server server, Socket socket) throws IOException {
         this.server = server;
@@ -27,31 +23,43 @@ public class ClientHandler {
                 while (true) {
                     String msg = in.readUTF();
                     if (msg.startsWith("/login ")) {
-                        String username = msg.split("\\s+")[1];
-                        if (server.isUniqUsername(username)) {
-                            this.username = username;
-                            sendMessage("/login_ok " + username);
-                            break;
-                        } else {
-                            sendMessage("/login_failed " + username);
+                        // /login Bob@gmail.com 111
+                        String[] tokens = msg.split("\\s+");
+                        if (tokens.length != 3) {
+                            sendMessage("Server: Incorrect command");
+                            continue;
                         }
+                        
+                        String login = tokens[1];
+                        String password = tokens[2];
+                        String nick = server.getAuthenticationProvider()
+                                .getUsernameByLoginAndPassword(login, password);
+                        if (nick == null) {
+                            sendMessage("/login_failed Incorrect login/password");
+                            continue;
+                        }
+                        
+                        if (server.isUserOnline(nick)) {
+                            sendMessage("/login_failed this username is already in use");
+                            continue;
+                        }
+                        
+                        username = nick;
+                        sendMessage("/login_ok " + username);
+                        server.subscribe(this);
+                        break;
                     }
-                    
                 }
                 
                 while (true) {
                     String msg = in.readUTF();
-                    if (msg.equals(WHO_AM_I_COMMAND)) {
-                        sendMessage(msg + "\n" + username);
-                    } else if (msg.startsWith(PRIVATE_MESSAGE_COMMAND)) {
-                        String recipient = msg.split(" ", 3)[1];
-                        String text = msg.split(" ", 3)[2];
-                        if (server.privateMessage(recipient, "from " + username + ": " + text)) {
-                            sendMessage("to " + recipient + ": " + text);
-                        }
-                    } else {
-                        server.broadcastMessage(username + ": " + msg);
+                    // /p Bob Hello
+                    if (msg.startsWith("/")) {
+                        executeCmd(msg);
+                        continue;
                     }
+                    
+                    server.broadcastMessage(username + ": " + msg);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -59,11 +67,21 @@ public class ClientHandler {
                 disconnect();
             }
         }).start();
-        
     }
     
-    public void sendMessage(String msg) throws IOException {
-        out.writeUTF(msg);
+    public void executeCmd(String msg) throws IOException {
+        if (msg.startsWith("/p ")) {
+            String[] tokens = msg.split("\\s+", 3);
+            server.sendPrivateMsg(this, tokens[1], tokens[2]);
+        }
+    }
+    
+    public void sendMessage(String msg) {
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            disconnect();
+        }
     }
     
     public void disconnect() {
