@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class InMemoryAuthProvider implements AuthenticationProvider{
+public class InMemoryAuthProvider implements AuthenticationProvider {
     private class User {
         private String login;
         private String password;
@@ -29,11 +29,22 @@ public class InMemoryAuthProvider implements AuthenticationProvider{
     
     @Override
     public String getUsernameByLoginAndPassword(String login, String password) {
-        for(User u : list) {
-            if(u.login.equals(login) && u.password.equals(password)) {
+        for (User u : list) {
+            if (u.login.equals(login) && u.password.equals(password)) {
                 return u.username;
             }
         }
         return null;
+    }
+    
+    @Override
+    public boolean changeUsername(String oldUsername, String newUsername) {
+        for (User u : list) {
+            if (u.username.equals(oldUsername)) {
+                u.username = newUsername;
+                return true;
+            }
+        }
+        return false;
     }
 }

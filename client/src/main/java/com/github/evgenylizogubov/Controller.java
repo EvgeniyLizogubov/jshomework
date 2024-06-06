@@ -83,9 +83,16 @@ public class Controller implements Initializable {
                                 clientsList.getItems().clear();
                                 String[] tokens = msg.split("\\s+");
                                 for (int i = 1; i < tokens.length; i++) {
-                                    clientsList.getItems().add(tokens[i]);
+                                    clientsList.getItems().add(
+                                            tokens[i].equals(username) ? tokens[i] + " (You)" : tokens[i]
+                                    );
                                 }
                             });
+                            continue;
+                        }
+                        
+                        if (msg.startsWith("/new_nickname ")) {
+                            username = msg.split("\\s+")[1];
                             continue;
                         }
                         msgArea.appendText(msg + "\n");
