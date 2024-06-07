@@ -74,6 +74,24 @@ public class ClientHandler {
             String[] tokens = msg.split("\\s+", 3);
             server.sendPrivateMsg(this, tokens[1], tokens[2]);
         }
+        
+        if (msg.startsWith("/change_nick ")) {
+            sendMessage(msg);
+            String[] tokens = msg.split("\\s+", 3);
+            String newUsername = tokens[1];
+            String oldUsername = tokens[2];
+            if (!oldUsername.equals(username)) {
+                sendMessage("You can only change your nickname.");
+                return;
+            }
+            
+            if (server.getAuthenticationProvider().changeUsername(oldUsername, newUsername)) {
+                server.broadcastMessage(username + " changed his nickname to " + newUsername);
+                username = newUsername;
+                sendMessage("/new_nickname " + newUsername);
+                server.sendClientList();
+            }
+        }
     }
     
     public void sendMessage(String msg) {
