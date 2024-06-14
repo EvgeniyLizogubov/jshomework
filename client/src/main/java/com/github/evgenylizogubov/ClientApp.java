@@ -15,7 +15,6 @@ public class ClientApp extends Application {
         stage.setTitle("Chat");
         stage.setScene(scene);
         stage.show();
-        // /change_nick newUsername oldUsername
     }
     
     public static void main(String[] args) {

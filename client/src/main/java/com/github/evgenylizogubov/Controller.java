@@ -32,7 +32,6 @@ public class Controller implements Initializable {
     private DataOutputStream out;
     private String username;
     
-    // login: Bob@gmail.com password: 111 username: Bob
     public void setUsername(String username) {
         this.username = username;
         if (this.username == null) {
@@ -63,9 +62,6 @@ public class Controller implements Initializable {
                     while (true) {
                         String msg = in.readUTF();
                         if (msg.startsWith("/login_ok ")) {
-                            // client -> server /login Bob
-                            // server -> client /login_ok Bob
-                            // server -> client /login_failed username already in use
                             setUsername(msg.split("\\s+")[1]);
                             break;
                         }
@@ -75,7 +71,6 @@ public class Controller implements Initializable {
                             msgArea.appendText(reason + "\n");
                         }
                     }
-                    // цикл общения
                     while (true) {
                         String msg = in.readUTF();
                         if (msg.startsWith("/clients_list ")) {
