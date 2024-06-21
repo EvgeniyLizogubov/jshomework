@@ -3,17 +3,29 @@ package com.github.evgenylizogubov;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+    
     @FXML
     private TextField msgField, loginField;
     @FXML
@@ -31,6 +43,9 @@ public class Controller implements Initializable {
     private DataInputStream in;
     private DataOutputStream out;
     private String username;
+    private BufferedReader reader;
+    private BufferedWriter writer;
+    private String historyFilePath;
     
     // login: Bob@gmail.com password: 111 username: Bob
     public void setUsername(String username) {
@@ -67,6 +82,9 @@ public class Controller implements Initializable {
                             // server -> client /login_ok Bob
                             // server -> client /login_failed username already in use
                             setUsername(msg.split("\\s+")[1]);
+                            historyFilePath = "client/src/main/resources/history/" + username + ".txt";
+                            printHistory();
+                            writer = new BufferedWriter(new FileWriter(historyFilePath, true));
                             break;
                         }
                         
@@ -95,6 +113,8 @@ public class Controller implements Initializable {
                             username = msg.split("\\s+")[1];
                             continue;
                         }
+                        
+                        saveHistory(msg);
                         msgArea.appendText(msg + "\n");
                     }
                 } catch (IOException e) {
@@ -133,6 +153,7 @@ public class Controller implements Initializable {
         if (socket != null) {
             try {
                 socket.close();
+                writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -146,6 +167,31 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно отправить сообщение");
             alert.showAndWait();
+        }
+    }
+    
+    private void printHistory() {
+        if (Files.exists(Path.of(historyFilePath))) {
+            try {
+                reader = new BufferedReader(new FileReader(historyFilePath));
+                String str;
+                while ((str = reader.readLine()) != null) {
+                    msgArea.appendText(str + "\n");
+                }
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    
+    private void saveHistory(String msg) {
+        try {
+            writer.write(msg);
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
     
