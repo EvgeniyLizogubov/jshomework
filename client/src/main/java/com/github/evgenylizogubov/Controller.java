@@ -10,6 +10,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,6 +27,7 @@ import java.nio.file.Path;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+    private final static Logger LOGGER = LogManager.getLogger(Controller.class);
     
     @FXML
     private TextField msgField, loginField;
@@ -49,6 +52,7 @@ public class Controller implements Initializable {
     
     // login: Bob@gmail.com password: 111 username: Bob
     public void setUsername(String username) {
+        LOGGER.trace("set username - " + username);
         this.username = username;
         if (this.username == null) {
             loginBox.setVisible(true);
@@ -78,6 +82,7 @@ public class Controller implements Initializable {
                     while (true) {
                         String msg = in.readUTF();
                         if (msg.startsWith("/login_ok ")) {
+                            LOGGER.trace("Login OK");
                             // client -> server /login Bob
                             // server -> client /login_ok Bob
                             // server -> client /login_failed username already in use
@@ -89,6 +94,7 @@ public class Controller implements Initializable {
                         }
                         
                         if (msg.startsWith("/login_failed ")) {
+                            LOGGER.info("Login failed");
                             String reason = msg.split("\\s+", 2)[1];
                             msgArea.appendText(reason + "\n");
                         }
@@ -97,6 +103,7 @@ public class Controller implements Initializable {
                     while (true) {
                         String msg = in.readUTF();
                         if (msg.startsWith("/clients_list ")) {
+                            LOGGER.trace("Client list received");
                             Platform.runLater(() -> {
                                 clientsList.getItems().clear();
                                 String[] tokens = msg.split("\\s+");
@@ -111,6 +118,7 @@ public class Controller implements Initializable {
                         
                         if (msg.startsWith("/new_nickname ")) {
                             username = msg.split("\\s+")[1];
+                            LOGGER.info("Change username to " + username);
                             continue;
                         }
                         
@@ -118,23 +126,25 @@ public class Controller implements Initializable {
                         msgArea.appendText(msg + "\n");
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.getMessage());
                 } finally {
                     disconnect();
                 }
             }).start();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
             throw new RuntimeException("Unable to connect to server");
         }
     }
     
     public void login() {
         if (socket == null || socket.isClosed()) {
+            LOGGER.trace("Login");
             connect();
         }
         
         if (loginField.getText().isEmpty()) {
+            LOGGER.info("Login failed - empty username");
             Alert alert = new Alert(Alert.AlertType.ERROR, "Имя пользователя не может быть пустым", ButtonType.OK);
             alert.showAndWait();
             return;
@@ -144,18 +154,19 @@ public class Controller implements Initializable {
         try {
             out.writeUTF("/login " + loginField.getText() + " " + passwordField.getText());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
     
     public void disconnect() {
+        LOGGER.trace("Disconnect");
         setUsername(null);
         if (socket != null) {
             try {
                 socket.close();
                 writer.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.warn(e.getMessage());
             }
         }
     }
@@ -165,6 +176,7 @@ public class Controller implements Initializable {
             out.writeUTF(msgField.getText());
             msgField.clear();
         } catch (IOException e) {
+            LOGGER.warn("Unable to sent message");
             Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно отправить сообщение");
             alert.showAndWait();
         }
@@ -172,6 +184,7 @@ public class Controller implements Initializable {
     
     private void printHistory() {
         if (Files.exists(Path.of(historyFilePath))) {
+            LOGGER.trace("Print history");
             try {
                 reader = new BufferedReader(new FileReader(historyFilePath));
                 String str;
@@ -180,6 +193,7 @@ public class Controller implements Initializable {
                 }
                 reader.close();
             } catch (IOException e) {
+                LOGGER.error(e.getMessage());
                 throw new RuntimeException(e);
             }
         }
