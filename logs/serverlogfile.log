@@ -1,0 +1,3 @@
+ERROR 2024-06-27 12:19:45 [Thread-1] (ClientHandler.java:75) - Connection reset
+ERROR 2024-06-27 12:22:01 [Thread-1] (ClientHandler.java:75) - Connection reset
+ERROR 2024-06-27 12:54:34 [Thread-0] (ClientHandler.java:75) - Connection reset

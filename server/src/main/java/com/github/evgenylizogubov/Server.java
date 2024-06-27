@@ -33,9 +33,7 @@ public class Server {
     }
     
     public void broadcastMessage(String msg) {
-        for (ClientHandler clientHandler : list) {
-            clientHandler.sendMessage(msg);
-        }
+        list.forEach(clientHandler -> clientHandler.sendMessage(msg));
     }
     
     public void subscribe(ClientHandler clientHandler) {
@@ -50,37 +48,30 @@ public class Server {
     
     public boolean isUserOnline(String username) {
         LOGGER.trace("Check user is online");
-        for (ClientHandler clientHandler : list) {
-            if (clientHandler.getUsername().equals(username)) {
-                return true;
-            }
-        }
-        return false;
+        ClientHandler clientHandler = list.stream().filter(ch -> ch.getUsername().equals(username)).findFirst().orElse(null);
+        return clientHandler != null;
     }
     
     public void sendPrivateMsg(ClientHandler sender, String receiver, String msg) {
-        for (ClientHandler c : list) {
-            if (c.getUsername().equals(receiver)) {
-                c.sendMessage("From: " + sender.getUsername() + " Message: " + msg);
-                sender.sendMessage("Receiver: " + receiver + " Message: " + msg);
-                return;
-            }
+        ClientHandler clientHandler = list.stream().filter(ch -> ch.getUsername().equals(receiver)).findFirst().orElse(null);
+        if (clientHandler == null) {
+            sender.sendMessage("Unable to send message to " + receiver);
+        } else {
+            clientHandler.sendMessage("From: " + sender.getUsername() + " Message: " + msg);
+            sender.sendMessage("Receiver: " + receiver + " Message: " + msg);
         }
-        sender.sendMessage("Unable to send message to " + receiver);
     }
     
     public void sendClientList() {
         LOGGER.trace("Send clients list");
         StringBuilder builder = new StringBuilder("/clients_list ");
-        for (ClientHandler c : list) {
-            builder.append(c.getUsername()).append(" ");
-        }
+        
+        list.forEach(ch -> builder.append(ch.getUsername()).append(" "));
+        
         builder.setLength(builder.length() - 1);
-        // /clients_list Bob Alex John
         String clientList = builder.toString();
-        for (ClientHandler c : list) {
-            c.sendMessage(clientList);
-        }
+        
+        list.forEach(ch -> ch.sendMessage(clientList));
     }
     
     public AuthenticationProvider getAuthenticationProvider() {

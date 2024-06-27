@@ -24,6 +24,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -107,11 +108,9 @@ public class Controller implements Initializable {
                             Platform.runLater(() -> {
                                 clientsList.getItems().clear();
                                 String[] tokens = msg.split("\\s+");
-                                for (int i = 1; i < tokens.length; i++) {
-                                    clientsList.getItems().add(
-                                            tokens[i].equals(username) ? tokens[i] + " (You)" : tokens[i]
-                                    );
-                                }
+                                Arrays.stream(tokens).skip(1).forEach(token -> clientsList.getItems().add(
+                                        token.equals(username) ? token + " (You)" : token
+                                ));
                             });
                             continue;
                         }
@@ -187,10 +186,7 @@ public class Controller implements Initializable {
             LOGGER.trace("Print history");
             try {
                 reader = new BufferedReader(new FileReader(historyFilePath));
-                String str;
-                while ((str = reader.readLine()) != null) {
-                    msgArea.appendText(str + "\n");
-                }
+                reader.lines().forEach(str -> msgArea.appendText(str + "\n"));
                 reader.close();
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
