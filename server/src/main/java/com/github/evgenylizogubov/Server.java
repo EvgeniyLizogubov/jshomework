@@ -1,5 +1,8 @@
 package com.github.evgenylizogubov;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
+    private final static Logger LOGGER = LogManager.getLogger(Server.class);
+    
     private int port;
     private List<ClientHandler> list;
     private AuthenticationProvider authenticationProvider;
@@ -16,14 +21,14 @@ public class Server {
         this.list = new ArrayList<>();
         this.authenticationProvider = new InMemoryAuthProvider();
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Сервер запущен на порту 8189. Ожидаем подключение клиента...");
+            LOGGER.trace("The server is running on port 8189. Waiting for the client to connect...");
             while (true) {
                 Socket socket = serverSocket.accept();
                 new ClientHandler(this, socket);
             }
             
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
     
@@ -44,6 +49,7 @@ public class Server {
     }
     
     public boolean isUserOnline(String username) {
+        LOGGER.trace("Check user is online");
         for (ClientHandler clientHandler : list) {
             if (clientHandler.getUsername().equals(username)) {
                 return true;
@@ -64,6 +70,7 @@ public class Server {
     }
     
     public void sendClientList() {
+        LOGGER.trace("Send clients list");
         StringBuilder builder = new StringBuilder("/clients_list ");
         for (ClientHandler c : list) {
             builder.append(c.getUsername()).append(" ");
