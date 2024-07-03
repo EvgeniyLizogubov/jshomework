@@ -29,22 +29,18 @@ public class InMemoryAuthProvider implements AuthenticationProvider {
     
     @Override
     public String getUsernameByLoginAndPassword(String login, String password) {
-        for (User u : list) {
-            if (u.login.equals(login) && u.password.equals(password)) {
-                return u.username;
-            }
-        }
-        return null;
+        User user = list.stream().filter(u -> u.login.equals(login) && u.password.equals(password)).findFirst().orElse(null);
+        return user == null ? null : user.username;
     }
     
     @Override
     public boolean changeUsername(String oldUsername, String newUsername) {
-        for (User u : list) {
-            if (u.username.equals(oldUsername)) {
-                u.username = newUsername;
-                return true;
-            }
+        User user = list.stream().filter(u -> u.username.equals(oldUsername)).findFirst().orElse(null);
+        if (user == null) {
+            return false;
+        } else {
+            user.username = newUsername;
+            return true;
         }
-        return false;
     }
 }

@@ -1,7 +1,3 @@
-John: 123
-John: dfg
-John: tyjy
-John: tyj
-John: yj
-John: tyj
-John: 
+John: 321
+/change_nick Jo John
+John changed his nickname to Jo

@@ -40,3 +40,8 @@ John: tyj
 John: yj
 John: tyj
 John: 
+Alex: sdf
+John: John
+Ben: BBB
+Receiver: Alex Message: 123
+From: Alex Message: 321
