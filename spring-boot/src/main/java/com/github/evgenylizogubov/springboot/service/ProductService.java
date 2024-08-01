@@ -2,33 +2,44 @@ package com.github.evgenylizogubov.springboot.service;
 
 import com.github.evgenylizogubov.springboot.model.Product;
 import com.github.evgenylizogubov.springboot.repository.ProductRepository;
+import com.github.evgenylizogubov.springboot.util.ProductSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
     
     @Autowired
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
     
-    public List<Product> getAll() {
-        return productRepository.getAll();
+    public List<Product> getAll(int pageNumber, Integer minPrice, Integer maxPrice) {
+        Specification<Product> specification = new ProductSpecification(minPrice, maxPrice);
+        PageRequest request = PageRequest.of(pageNumber - 1, 2);
+        return productRepository.findAll(specification, request).toList();
     }
     
-    public Product getById(int id) {
-        return productRepository.getById(id);
+    public Optional<Product> getById(int id) {
+        return productRepository.findById(id);
     }
     
     public void removeById(int id) {
-        productRepository.removeById(id);
+        productRepository.deleteById(id);
     }
     
     public void create(Product product) {
-        productRepository.create(product);
+        productRepository.save(product);
+    }
+    
+    public int getCount(Integer minPrice, Integer maxPrice) {
+        Specification<Product> specification = new ProductSpecification(minPrice, maxPrice);
+        return (int) productRepository.count(specification);
     }
 }
