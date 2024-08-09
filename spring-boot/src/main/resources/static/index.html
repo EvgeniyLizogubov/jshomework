@@ -19,7 +19,7 @@
                 <td>ID</td>
                 <td>Наименование</td>
                 <td>Цена</td>
-                <td>Действие</td>
+                <td>Действия</td>
             </tr>
             <tbody>
             <tr ng-repeat="p in ProductsList">
@@ -28,6 +28,7 @@
                 <td>{{p.price}}</td>
                 <td>
                     <button class="btn btn-danger" ng-click="deleteProduct(p.id)">Удалить</button>
+                    <button class="btn btn-primary" ng-click="addProductToCart(p.name, p.price)">В корзину</button>
                 </td>
             </tr>
             </tbody>
@@ -52,6 +53,35 @@
                 <input class="form-control" type="number" placeholder="Цена" ng-model="newProduct.price" style="margin-right: 10px">
                 <button type="submit" class="btn btn-primary">Добавить</button>
         </form>
+        <br>
+        <br>
+        <h3>Корзина</h3>
+        <table class="table table-hover">
+            <tr>
+                <td>Id</td>
+                <td>Наименование</td>
+                <td>Цена</td>
+                <td>Количество</td>
+                <td>Стоимость</td>
+                <td>Удаление из корзины</td>
+            </tr>
+            <tbody>
+            <tr ng-repeat="cp in CartPositionsList">
+                <td>{{cp.id}}</td>
+                <td>{{cp.product.name}}</td>
+                <td>{{cp.product.price}}</td>
+                <td>
+                    <button class="btn btn-primary" ng-click="updateCartPosition(cp.id, cp.amount - 1)">-</button>
+                    {{cp.amount}}
+                    <button class="btn btn-primary" ng-click="updateCartPosition(cp.id, cp.amount + 1)">+</button>
+                </td>
+                <td>{{cp.product.price * cp.amount}}</td>
+                <td>
+                    <button class="btn btn-danger" ng-click="deleteCartPosition(cp.id)">Удалить</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
