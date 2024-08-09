@@ -3,7 +3,7 @@ package com.github.evgenylizogubov.springboot.service;
 import com.github.evgenylizogubov.springboot.model.Product;
 import com.github.evgenylizogubov.springboot.repository.ProductRepository;
 import com.github.evgenylizogubov.springboot.util.ProductSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -12,13 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    
-    @Autowired
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
     
     public List<Product> getAll(int pageNumber, Integer minPrice, Integer maxPrice) {
         Specification<Product> specification = new ProductSpecification(minPrice, maxPrice);
